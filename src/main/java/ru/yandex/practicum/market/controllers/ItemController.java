@@ -36,7 +36,7 @@ public class ItemController {
     }
 
     @PostMapping("/items")
-    public String putItemInCart(RedirectAttributes redirectAttributes,
+    public String addItemToCart(RedirectAttributes redirectAttributes,
                             @RequestParam(name = "id") Long id,
                             @RequestParam(name = "action") ItemAction action,
                             @RequestParam(name = "search", defaultValue = "") String search,
@@ -44,7 +44,7 @@ public class ItemController {
                             @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
                             @RequestParam(name = "pageSize", defaultValue = "5") int pageSize) {
 
-        itemService.putItemInCart(id, action);
+        itemService.addItemToCart(id, action);
 
         redirectAttributes.addAttribute("search", search);
         redirectAttributes.addAttribute("sort", sort);
@@ -64,11 +64,11 @@ public class ItemController {
     }
 
     @PostMapping("/items/{id}")
-    public String addToCart(Model model,
+    public String addItemToCart(Model model,
                             @PathVariable Long id,
                             @RequestParam(name = "action") ItemAction action) {
 
-        ItemDto item = itemService.addToCartAndReturnItem(id, action);
+        ItemDto item = itemService.addItemToCartAndReturnItem(id, action);
 
         model.addAttribute("item", item);
 

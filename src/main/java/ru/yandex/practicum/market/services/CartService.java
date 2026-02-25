@@ -12,16 +12,17 @@ import java.util.List;
 public class CartService {
 
 
-    private final ItemDto item1 = new ItemDto(1, "Title 1", "Description 1", "", 100, 1);
+    private final ItemDto item1 = new ItemDto(1, "Title 1", "Description 1", "", 100L, 1);
     private final List<ItemDto> items = List.of(item1);
-    private final CartDto cartDto = new CartDto(items, BigDecimal.valueOf(100));
+    private final CartDto cartDto = new CartDto(items, 100L);
 
     public CartDto getCart() {
         // TODO : use repository
         return cartDto;
     }
 
-    public void addToCart(Long id, ItemAction action) {
+    public CartDto addItemToCart(Long id, ItemAction action) {
         // TODO : use repository
+        return cartDto;
     }
 }

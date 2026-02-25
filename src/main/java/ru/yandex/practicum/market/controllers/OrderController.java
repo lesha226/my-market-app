@@ -39,7 +39,8 @@ public class OrderController {
 
         OrderDto order = service.getOrder(id, newOrder);
 
-        redirectAttributes.addAttribute("newOrder", newOrder);
+        //redirectAttributes.addAttribute("newOrder", newOrder);
+        model.addAttribute("newOrder", newOrder);
         model.addAttribute("order", order);
 
         return "order";

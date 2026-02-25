@@ -31,12 +31,11 @@ public class CartController {
     }
 
     @PostMapping("/items")
-    public String addToCart(Model model,
-                            @RequestParam(name = "id") Long id,
-                            @RequestParam(name = "action") ItemAction action) {
+    public String addItemToCart(Model model,
+                                @RequestParam(name = "id") Long id,
+                                @RequestParam(name = "action") ItemAction action) {
 
-        service.addToCart(id, action);
-        CartDto cartDto = service.getCart();
+        CartDto cartDto = service.addItemToCart(id, action);
 
         model.addAttribute("items", cartDto.items());
         model.addAttribute("total", cartDto.total());
