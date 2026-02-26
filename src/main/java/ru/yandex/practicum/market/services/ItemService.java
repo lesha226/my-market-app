@@ -1,42 +1,114 @@
 package ru.yandex.practicum.market.services;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.market.dto.*;
 import ru.yandex.practicum.market.dto.subtypes.ItemAction;
 import ru.yandex.practicum.market.dto.subtypes.ItemsSort;
 import ru.yandex.practicum.market.dto.subtypes.ItemsPaging;
+import ru.yandex.practicum.market.entities.Item;
+import ru.yandex.practicum.market.repositories.ItemRepository;
+import ru.yandex.practicum.market.services.mappers.ItemMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ItemService {
 
-    private final ItemDto tempItem1 = new ItemDto(1, "Title 1", "Description 1", "", 100L, 0);
-    private final ItemDto tempItem2 = new ItemDto(2, "Title 2", "Description 2", "", 200L, 0);
-    private final ItemDto tempItem3 = new ItemDto(3, "Title 3", "Description 3", "", 300L, 0);
-    private final ItemDto[][] tempItems = {{tempItem1, tempItem2, tempItem3}};
-    private final ItemsPaging tempPaging = new ItemsPaging(5, 1, false, false);
-    private final Long newOrderId = 1L;
+    private final ItemRepository repository;
+    private final ItemMapper mapper;
 
+    public ItemService(ItemRepository repository, ItemMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
+
+    @Transactional(readOnly = true)
     public ItemsPageDto getItemsPage(String search, ItemsSort sort, int pageNumber, int pageSize) {
-        // TODO : use repository
-        return new ItemsPageDto(tempItems, search, sort, new ItemsPaging(pageSize, pageNumber, pageNumber > 1, true));
+        if (search == null || sort == null || pageNumber <= 0 || pageSize <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, mapToSort(sort));
+        Page<Item> itemsPage = repository.findBySearchString(search.trim(), pageable);
+        List<List<ItemDto>> itemsForDto = makeItemsForDto(itemsPage.getContent());
+        ItemsPaging paging = new ItemsPaging(pageSize, pageNumber, itemsPage.hasPrevious(), itemsPage.hasNext());
+
+        return new ItemsPageDto(itemsForDto, search, sort, paging);
+    }
+
+    private Sort mapToSort(ItemsSort sort) {
+        if (sort == null) {
+            return null;
+        }
+
+        return switch (sort) {
+            case NO     -> Sort.by(Sort.Order.asc("id"));
+            case ALPHA  -> Sort.by(Sort.Order.asc("title"), Sort.Order.asc("id"));
+            case PRICE  -> Sort.by(Sort.Order.asc("price"), Sort.Order.asc("id"));
+        };
+    }
+
+    @NonNull
+    @Transactional(readOnly = true)
+    public ItemDto getItem(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Item item = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Товар не найден!"));
+
+        return mapper.toDto(item);
     }
 
     public void addItemToCart(Long id, ItemAction action) {
-        // TODO : use repository
-    }
+        if (id == null || action == null) {
+            throw new IllegalArgumentException();
+        }
 
-    public ItemDto getItem(Long id) {
-        // TODO: use repository
-        return tempItem1;
+        // TODO : use repository or cart service
     }
 
     public ItemDto addItemToCartAndReturnItem(Long id, ItemAction action) {
-        // TODO: use repository
-        return tempItem1;
+        if (id == null || action == null) {
+            throw new IllegalArgumentException();
+        }
+
+        // TODO: use repository or cart service
+        return new ItemDto(1L, "Title 1", "Description 1", "", 100L, 0);
     }
 
     public Long buy() {
-        // TODO : use repository
-        return newOrderId;
+        // TODO : use repository or cart service
+        return 1L;
+    }
+
+    private List<List<ItemDto>> makeItemsForDto(List<Item> itemList) {
+        List<List<ItemDto>> itemsForDto = new ArrayList<>();
+        List<ItemDto> group = new ArrayList<>();
+        itemsForDto.add(group);
+
+        for (Item item: itemList) {
+            if (group.size() == 3) {
+                group = new ArrayList<>();
+                itemsForDto.add(group);
+            }
+
+            group.add(mapper.toDto(item));
+        }
+
+        while (group.size() < 3) {
+            group.add(new ItemDto(-1L, "", "", "", 0L, 0));
+        }
+
+        return itemsForDto;
     }
 }

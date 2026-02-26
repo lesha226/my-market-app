@@ -14,6 +14,8 @@ import ru.yandex.practicum.market.dto.subtypes.ItemsPaging;
 import ru.yandex.practicum.market.dto.subtypes.ItemsSort;
 import ru.yandex.practicum.market.services.ItemService;
 
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,7 +31,7 @@ class ItemControllerTest {
 
     @Test
     void testGetItemsPage() throws Exception {
-        ItemDto[][] items = {};
+        List<List<ItemDto>> items = List.of();
         ItemsPaging paging = new ItemsPaging(4, 3, true, true);
         ItemsPageDto dto = new ItemsPageDto(items, "5", ItemsSort.ALPHA, paging);
         when(itemService.getItemsPage("1", ItemsSort.PRICE, 3, 4)).thenReturn(dto);
