@@ -12,7 +12,7 @@ import java.util.List;
 public class CartService {
 
 
-    private final ItemDto item1 = new ItemDto(1, "Title 1", "Description 1", "", 100L, 1);
+    private final ItemDto item1 = new ItemDto(1L, "Title 1", "Description 1", "", 100L, 1);
     private final List<ItemDto> items = List.of(item1);
     private final CartDto cartDto = new CartDto(items, 100L);
 
