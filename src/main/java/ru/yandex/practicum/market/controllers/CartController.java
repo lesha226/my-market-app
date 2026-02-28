@@ -35,7 +35,7 @@ public class CartController {
                                 @RequestParam(name = "id") Long id,
                                 @RequestParam(name = "action") ItemAction action) {
 
-        CartDto cartDto = service.addItemToCart(id, action);
+        CartDto cartDto = service.performActionAndGetCart(id, action);
 
         model.addAttribute("items", cartDto.items());
         model.addAttribute("total", cartDto.total());
