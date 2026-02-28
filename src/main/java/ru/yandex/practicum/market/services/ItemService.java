@@ -20,13 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class ItemService {
 
     private final ItemRepository repository;
+    private final CartService cartService;
     private final ItemMapper mapper;
 
-    public ItemService(ItemRepository repository, ItemMapper mapper) {
+    public ItemService(ItemRepository repository, CartService cartService, ItemMapper mapper) {
         this.repository = repository;
+        this.cartService = cartService;
         this.mapper = mapper;
     }
 
@@ -74,7 +77,7 @@ public class ItemService {
             throw new IllegalArgumentException();
         }
 
-        // TODO : use repository or cart service
+        cartService.performAction(id, action);
     }
 
     public ItemDto addItemToCartAndReturnItem(Long id, ItemAction action) {
@@ -82,8 +85,9 @@ public class ItemService {
             throw new IllegalArgumentException();
         }
 
-        // TODO: use repository or cart service
-        return new ItemDto(1L, "Title 1", "Description 1", "", 100L, 0);
+        cartService.performAction(id, action);
+
+        return getItem(id);
     }
 
     public Long buy() {

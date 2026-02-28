@@ -16,10 +16,11 @@ public class Item {
 
     private String description;
 
+    @Column(name = "img_path")
     private String imgPath;
 
     private long price;
 
-    @Transient
+    @Column(columnDefinition = "int default 0")
     private int count = 0;
 }
