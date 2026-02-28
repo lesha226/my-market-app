@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.yandex.practicum.market.dto.ItemDto;
 import ru.yandex.practicum.market.dto.OrderDto;
+import ru.yandex.practicum.market.dto.OrderItemDto;
 import ru.yandex.practicum.market.services.OrderService;
 
 import java.util.List;
@@ -30,8 +31,8 @@ class OrderControllerTest {
 
     @Test
     void testGetOrders() throws Exception {
-        ItemDto item = new ItemDto(1L, "Title", "Desc", "/images/img123.jpg", 100L, 3);
-        List<ItemDto> items = List.of(item);
+        OrderItemDto item = new OrderItemDto(1L, "Title", 100L, 3);
+        List<OrderItemDto> items = List.of(item);
         List<OrderDto> dto = List.of(new OrderDto(1L, items, 100L));
 
         doReturn(dto).when(service).getOrders();
@@ -46,8 +47,8 @@ class OrderControllerTest {
 
     @Test
     void testGetOrder() throws Exception {
-        ItemDto item = new ItemDto(1L, "Title", "Desc", "/images/img123.jpg", 100L, 3);
-        List<ItemDto> items = List.of(item);
+        OrderItemDto item = new OrderItemDto(1L, "Title", 100L, 3);
+        List<OrderItemDto> items = List.of(item);
         OrderDto dto = new OrderDto(1L, items, 100L);
 
         doReturn(dto).when(service).getOrder(1L, true);
