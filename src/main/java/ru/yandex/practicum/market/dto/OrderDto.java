@@ -5,6 +5,6 @@ import java.util.List;
 
 public record OrderDto(
         Long id,
-        List<ItemDto> items,
+        List<OrderItemDto> items,
         long totalSum
 ) {}
