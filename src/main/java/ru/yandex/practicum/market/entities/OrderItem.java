@@ -1,11 +1,11 @@
 package ru.yandex.practicum.market.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
 @Table(name = "order_items")
-@Data
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @IdClass(OrderItemId.class)
 public class OrderItem {
 

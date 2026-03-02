@@ -1,13 +1,11 @@
 package ru.yandex.practicum.market.entities;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
-//@Embeddable
-@Data
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class OrderItemId implements Serializable {
 
     @Column(name = "order_id")

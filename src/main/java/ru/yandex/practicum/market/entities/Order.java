@@ -1,17 +1,14 @@
 package ru.yandex.practicum.market.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.jspecify.annotations.NonNull;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name="orders")
-@Data
-@NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Order {
 
     @Id
@@ -20,8 +17,7 @@ public class Order {
 
     @OneToMany(/*mappedBy = "order", */cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id", referencedColumnName = "id")
-    @NonNull
-    private Set<OrderItem> items;
+    private List<OrderItem> items = new ArrayList<>();
 
     @Column(name = "total_sum", nullable = false)
     private long totalSum;
