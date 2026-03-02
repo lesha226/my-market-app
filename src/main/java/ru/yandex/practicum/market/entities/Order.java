@@ -2,12 +2,9 @@ package ru.yandex.practicum.market.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name="orders")
@@ -20,5 +17,11 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
+
+    public long getTotalSum() {
+        return items.stream()
+                .mapToLong(orderItem -> orderItem.getItem().getPrice() * orderItem.getCount())
+                .sum();
+    }
 
 }
