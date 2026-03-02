@@ -15,11 +15,13 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(/*mappedBy = "order", */cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
-    @Column(name = "total_sum", nullable = false)
-    private long totalSum;
+    public long getTotalSum() {
+        return items.stream()
+                .mapToLong(orderItem -> orderItem.getItem().getPrice() * orderItem.getCount())
+                .sum();
+    }
 
 }
