@@ -90,11 +90,6 @@ public class ItemService {
         return getItem(id);
     }
 
-    public Long buy() {
-        // TODO : use repository or cart service
-        return 1L;
-    }
-
     private List<List<ItemDto>> makeItemsForDto(List<Item> itemList) {
         List<List<ItemDto>> itemsForDto = new ArrayList<>();
         List<ItemDto> group = new ArrayList<>();

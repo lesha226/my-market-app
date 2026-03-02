@@ -7,15 +7,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.yandex.practicum.market.dto.*;
 import ru.yandex.practicum.market.dto.subtypes.ItemAction;
 import ru.yandex.practicum.market.dto.subtypes.ItemsSort;
+import ru.yandex.practicum.market.services.CartService;
 import ru.yandex.practicum.market.services.ItemService;
 
 @Controller
 public class ItemController {
 
     private final ItemService itemService;
+    private final CartService cartService;
 
-    public ItemController(ItemService itemService) {
+    public ItemController(ItemService itemService, CartService cartService) {
         this.itemService = itemService;
+        this.cartService = cartService;
     }
 
     @GetMapping({"/", "/items"})
@@ -78,7 +81,7 @@ public class ItemController {
     @PostMapping("/buy")
     public String buy(RedirectAttributes redirectAttributes) {
 
-        Long newOrderId = itemService.buy();
+        Long newOrderId = cartService.buy();
 
         redirectAttributes.addAttribute("newOrder", true);
 

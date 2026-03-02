@@ -10,15 +10,13 @@ import ru.yandex.practicum.market.entities.OrderItem;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ItemMapper.class})
+@Mapper(componentModel = "spring")
 public interface OrderMapper {
 
-    @Mapping(source = "itemId", target = "id")
+    @Mapping(source = "item.id", target = "id")
     @Mapping(source = "item.title", target = "title")
     @Mapping(source = "item.price", target = "price")
     OrderItemDto toDto(OrderItem orderItem);
 
-    OrderDto toDto(Order order);
-
-    List<OrderDto> toDto(List<Order> orders);
+    List<OrderItemDto> toDto(List<OrderItem> items);
 }

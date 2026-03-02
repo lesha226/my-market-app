@@ -12,6 +12,7 @@ import ru.yandex.practicum.market.dto.ItemsPageDto;
 import ru.yandex.practicum.market.dto.subtypes.ItemAction;
 import ru.yandex.practicum.market.dto.subtypes.ItemsPaging;
 import ru.yandex.practicum.market.dto.subtypes.ItemsSort;
+import ru.yandex.practicum.market.services.CartService;
 import ru.yandex.practicum.market.services.ItemService;
 
 import java.util.List;
@@ -28,6 +29,9 @@ class ItemControllerTest {
 
     @MockitoBean
     ItemService itemService;
+
+    @MockitoBean
+    CartService cartService;
 
     @Test
     void testGetItemsPage() throws Exception {
@@ -98,13 +102,13 @@ class ItemControllerTest {
     @Test
     void testBuy() throws Exception {
 
-        doReturn(1L).when(itemService).buy();
+        doReturn(1L).when(cartService).buy();
 
         mockMvc.perform(post("/buy"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/orders/1?newOrder=true"));
 
-        verify(itemService).buy();
+        verify(cartService).buy();
 
     }
 }

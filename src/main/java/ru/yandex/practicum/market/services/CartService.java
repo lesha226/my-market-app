@@ -8,11 +8,16 @@ import ru.yandex.practicum.market.dto.CartItemDto;
 import ru.yandex.practicum.market.dto.ItemDto;
 import ru.yandex.practicum.market.dto.subtypes.ItemAction;
 import ru.yandex.practicum.market.entities.Item;
+import ru.yandex.practicum.market.entities.Order;
+import ru.yandex.practicum.market.entities.OrderItem;
+import ru.yandex.practicum.market.exceptions.EmptyCartException;
 import ru.yandex.practicum.market.exceptions.ItemNotFoundException;
 import ru.yandex.practicum.market.repositories.ItemRepository;
+import ru.yandex.practicum.market.repositories.OrderRepository;
 import ru.yandex.practicum.market.services.mappers.CartMapper;
 import ru.yandex.practicum.market.services.mappers.ItemMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,10 +26,12 @@ import java.util.concurrent.atomic.AtomicLong;
 public class CartService {
 
     private final ItemRepository repository;
+    private final OrderRepository orderRepository;
     private final CartMapper mapper;
 
-    public CartService(ItemRepository repository, CartMapper mapper) {
+    public CartService(ItemRepository repository, OrderRepository orderRepository, CartMapper mapper) {
         this.repository = repository;
+        this.orderRepository = orderRepository;
         this.mapper = mapper;
     }
 
@@ -63,5 +70,33 @@ public class CartService {
 
         cartItem.setCount(count);
         //repository.save(cartItem);
+    }
+
+    @Transactional
+    public Long buy() {
+        List<Item> items = repository.findByCountGreaterThanOrderById(0);
+
+        if (items == null || items.isEmpty()) {
+            throw new EmptyCartException();
+        }
+
+        Order order = new Order();
+        List<OrderItem> orderItems = new ArrayList<>();
+        long totalSum = 0;
+        for (Item item: items) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setItem(item);
+            orderItem.setCount(item.getCount());
+            orderItems.add(orderItem);
+
+            totalSum += item.getPrice() * item.getCount();
+            item.setCount(0);
+        }
+        order.setItems(orderItems);
+
+        orderRepository.save(order);
+
+        return order.getId();
     }
 }

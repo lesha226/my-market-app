@@ -1,11 +1,11 @@
 package ru.yandex.practicum.market.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Data
 @Entity
 @Table(name="ITEMS")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.market.dto.CartDto;
-import ru.yandex.practicum.market.dto.CartItemDto;
-import ru.yandex.practicum.market.dto.ItemDto;
+import ru.yandex.practicum.market.dto.*;
 import ru.yandex.practicum.market.dto.subtypes.ItemAction;
 
 import java.util.List;
@@ -17,12 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
-//@AutoConfigureTestDatabase
-//@DataJpaTest
 class CartServiceTest {
 
     @Autowired
     CartService service;
+
+    @Autowired
+    OrderService orderService;
 
     @Autowired
     JdbcTemplate template;
@@ -93,5 +92,24 @@ class CartServiceTest {
         count = template.queryForObject("select count from items where title = 't1'", Long.class);
         assertEquals(0, count);
 
+    }
+
+    @Test
+    void testBuy() {
+        template.update("insert into items(title, description, img_path, price, count) values('t1', 'd1', 'i1', 1, 1)");
+        template.update("insert into items(title, description, img_path, price, count) values('t2', 'd2', 'i2', 2, 10)");
+        template.update("insert into items(title, description, img_path, price, count) values('t3', 'd3', 'i3', 3, 0)");
+        OrderItemDto item1 = new OrderItemDto(null, "t1", 1, 1);
+        OrderItemDto item2 = new OrderItemDto(null, "t2", 2, 10);
+        OrderDto dto = new OrderDto(null, List.of(item1, item2), 21);
+
+        Long id = service.buy();
+        entityManager.flush();
+        Integer cartSize = template.queryForObject("select count(*) from items where count > 0", Integer.class);
+
+        OrderDto result = orderService.getOrder(id, false);
+
+        assertEquals(dto, result);
+        assertEquals(0, cartSize);
     }
 }

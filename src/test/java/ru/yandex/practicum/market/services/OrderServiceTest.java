@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@AutoConfigureTestDatabase
 class OrderServiceTest {
 
     @Autowired
@@ -29,7 +28,7 @@ class OrderServiceTest {
         template.update("insert into items(title, description, img_path, price) values('t1', 'd1', 'i1', 1)");
         template.update("insert into items(title, description, img_path, price) values('t2', 'd2', 'i2', 2)");
         template.update("insert into items(title, description, img_path, price) values('t3', 'd3', 'i3', 3)");
-        template.update("insert into orders(total_sum) values (210)");
+        template.update("insert into orders() values ()");
         Long id = template.queryForObject("select id from orders order by id desc limit 1", Long.class);
         template.update("insert into order_items(order_id, item_id, count) " +
                 "select ?, id, power(10, price) from items where price < 3", id);
@@ -47,7 +46,7 @@ class OrderServiceTest {
         template.update("insert into items(title, description, img_path, price) values('t1', 'd1', 'i1', 1)");
         template.update("insert into items(title, description, img_path, price) values('t2', 'd2', 'i2', 2)");
         template.update("insert into items(title, description, img_path, price) values('t3', 'd3', 'i3', 3)");
-        template.update("insert into orders(total_sum) values (210)");
+        template.update("insert into orders() values ()");
         Long id = template.queryForObject("select id from orders order by id desc limit 1", Long.class);
         template.update("insert into order_items(order_id, item_id, count) " +
                 "select ?, id, power(10, price) from items where price < 3", id);
