@@ -40,3 +40,4 @@ out/
 /gradle/
 /gradlew
 /gradlew.bat
+.gitignore

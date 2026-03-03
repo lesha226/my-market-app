@@ -28,7 +28,7 @@
     - Сервис, репозитарий, тесты для Order (Затрачено: 1д)
     - Сервис, репозитарий или DAO, тесты для Image (оставлено как есть: /resources/static/images)
     - PostgreSQL (Затрачено: 0.5д)
-    - Docker
+    - Docker (Затрачено: 0.5д)
 2. Дополнительно
    * S3 storage
    * totalSum, Price: long → BigDecimal
