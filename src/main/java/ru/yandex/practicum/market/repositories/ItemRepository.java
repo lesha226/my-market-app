@@ -14,10 +14,4 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     default Page<Item> findBySearchString(String search, Pageable pageable) {
         return findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
     }
-
-    List<Item> findByCountGreaterThanOrderById(int count);
-
-    default List<Item> findCartItems() {
-        return findByCountGreaterThanOrderById(0);
-    }
 }

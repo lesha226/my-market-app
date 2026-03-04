@@ -22,7 +22,8 @@ public class OrderService {
     }
 
     public List<OrderDto> getOrders() {
-        List<Order> orders = orderRepository.findAll();
+        List<Order> orders = orderRepository.findAllByOrderByIdAsc();
+
         return mapOrdersToDto(orders);
     }
 

@@ -12,4 +12,5 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @NonNull
     List<Order> findAll();
 
+    List<Order> findAllByOrderByIdAsc();
 }

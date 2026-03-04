@@ -7,11 +7,13 @@ import ru.yandex.practicum.market.dto.CartDto;
 import ru.yandex.practicum.market.dto.CartItemDto;
 import ru.yandex.practicum.market.dto.ItemDto;
 import ru.yandex.practicum.market.dto.subtypes.ItemAction;
+import ru.yandex.practicum.market.entities.CartItem;
 import ru.yandex.practicum.market.entities.Item;
 import ru.yandex.practicum.market.entities.Order;
 import ru.yandex.practicum.market.entities.OrderItem;
 import ru.yandex.practicum.market.exceptions.EmptyCartException;
 import ru.yandex.practicum.market.exceptions.ItemNotFoundException;
+import ru.yandex.practicum.market.repositories.CartItemRepository;
 import ru.yandex.practicum.market.repositories.ItemRepository;
 import ru.yandex.practicum.market.repositories.OrderRepository;
 import ru.yandex.practicum.market.services.mappers.CartMapper;
@@ -25,11 +27,13 @@ import java.util.concurrent.atomic.AtomicLong;
 @Transactional
 public class CartService {
 
+    private final CartItemRepository cartItemRepository;
     private final ItemRepository repository;
     private final OrderRepository orderRepository;
     private final CartMapper mapper;
 
-    public CartService(ItemRepository repository, OrderRepository orderRepository, CartMapper mapper) {
+    public CartService(CartItemRepository cartItemRepository, ItemRepository repository, OrderRepository orderRepository, CartMapper mapper) {
+        this.cartItemRepository = cartItemRepository;
         this.repository = repository;
         this.orderRepository = orderRepository;
         this.mapper = mapper;
@@ -37,10 +41,10 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public CartDto getCart() {
-        List<Item> items = repository.findCartItems();
+        List<CartItem> cartItems = cartItemRepository.findAllByOrderByItemId();
 
         AtomicLong total = new AtomicLong();
-        List<CartItemDto> ItemDtoList= items.stream()
+        List<CartItemDto> ItemDtoList= cartItems.stream()
                 .map(mapper::toDto)
                 .peek(itemDto -> total.addAndGet(itemDto.price() * itemDto.count()))
                 .toList();
@@ -58,40 +62,59 @@ public class CartService {
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void performAction(Long id, ItemAction action) {
-        Item cartItem = repository.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException(id));
+    public void performAction(Long itemId, ItemAction action) {
+        Item item = repository.findById(itemId)
+                .orElseThrow(() -> new ItemNotFoundException(itemId));
 
         int count = switch (action) {
-            case MINUS -> Math.max(cartItem.getCount() - 1, 0);
-            case PLUS ->  cartItem.getCount() + 1;
+            case MINUS -> Math.max(item.getCount() - 1, 0);
+            case PLUS ->  item.getCount() + 1;
             case DELETE -> 0;
         };
 
-        cartItem.setCount(count);
-        //repository.save(cartItem);
+        CartItem cartItem = item.getCartItem();
+        if (count > 0) {
+
+            if (cartItem == null) {
+                cartItem = new CartItem(null, item, count);
+                cartItemRepository.save(cartItem);
+                item.setCartItem(cartItem);
+            } else {
+                cartItem.setCount(count);
+            }
+
+        } else {
+
+            if (cartItem != null) {
+                item.setCartItem(null);
+                cartItemRepository.delete(cartItem);
+            }
+
+        }
+
     }
 
     @Transactional
     public Long buy() {
-        List<Item> items = repository.findByCountGreaterThanOrderById(0);
+        List<CartItem> cartItems = cartItemRepository.findAll();
 
-        if (items == null || items.isEmpty()) {
+        if (cartItems == null || cartItems.isEmpty()) {
             throw new EmptyCartException();
         }
 
         Order order = new Order();
         List<OrderItem> orderItems = new ArrayList<>();
-        long totalSum = 0;
-        for (Item item: items) {
+        //long totalSum = 0;
+        for (CartItem cartItem: cartItems) {
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
-            orderItem.setItem(item);
-            orderItem.setCount(item.getCount());
+            orderItem.setItem(cartItem.getItem());
+            orderItem.setCount(cartItem.getCount());
             orderItems.add(orderItem);
 
-            totalSum += item.getPrice() * item.getCount();
-            item.setCount(0);
+            //totalSum += cartItem.getItem().getPrice() * cartItem.getCount();
+            cartItemRepository.delete(cartItem);
+            //cartItem.getItem().setCartItem(null);
         }
         order.setItems(orderItems);
 

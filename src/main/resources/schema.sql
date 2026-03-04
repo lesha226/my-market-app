@@ -4,9 +4,14 @@ create table if not exists items (
     description varchar(2000)   not null,
     img_path    varchar         not null,
     price       bigint          not null,
-    count       int             not null default 0,
     constraint pk_items primary key (id),
     constraint uk_items unique (title)
+);
+
+create table if not exists cart_items(
+    item_id     bigint          not null,
+    count       integer         not null,
+    constraint pk_cart_items primary key (item_id)
 );
 
 create table if not exists orders (

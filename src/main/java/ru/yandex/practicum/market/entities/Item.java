@@ -2,6 +2,7 @@ package ru.yandex.practicum.market.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.jspecify.annotations.Nullable;
 
 @Entity
 @Table(name="ITEMS")
@@ -23,4 +24,16 @@ public class Item {
 
     @Column(columnDefinition = "int default 0")
     private int count = 0;
+
+    @OneToOne(mappedBy = "item", fetch = FetchType.LAZY, optional = true)
+    private CartItem cartItem;
+
+    public int getCount() {
+        if (cartItem == null) {
+            return 0;
+        }
+
+        return cartItem.getCount();
+    }
+
 }
