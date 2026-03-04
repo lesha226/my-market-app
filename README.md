@@ -78,6 +78,7 @@ docker-compose up --build -d
 - Сервис, репозитарий или DAO, тесты для Image (оставлено как есть: /resources/static/images)
 - PostgreSQL (Затрачено: 0.5д)
 - Docker (Затрачено: 0.5д)
+- Liquibase (Затрачено: 1д.)
 
 
 ## Лицензия
