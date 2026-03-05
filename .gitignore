@@ -40,4 +40,5 @@ out/
 /gradle/
 /gradlew
 /gradlew.bat
-.gitignore
+/.env
+/liquibase/

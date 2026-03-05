@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="insert-example-items" author="lesha226@yandex.ru">
+        <preConditions>
+            <and>
+                <tableExists tableName="items"/>
+                <tableIsEmpty tableName="items"/>
+            </and>
+        </preConditions>
+        <rollback>
+            <sql>
+                delete from items
+                where title in ('Title 1', 'Title 2', 'Title 3', 'Title 4', 'Title 5')
+            </sql>
+        </rollback>
+        <sql>
+            insert into items(title, description, img_path, price)
+            with src as (
+                values
+                ('Title 1', 'Some description 1. (Liquibase)', 'images/1.jpeg', 1),
+                ('Title 2', 'Some description 2', 'images/2.jpeg', 2),
+                ('Title 3', 'Some description 3', 'images/3.jpeg', 3),
+                ('Title 4', 'Some description 4', 'images/4.jpeg', 4),
+                ('Title 5', 'Some description 5', 'images/5.jpeg', 5)
+            )
+            select *
+            from src
+            where not exists(select 1 from items);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
