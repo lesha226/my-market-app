@@ -44,11 +44,11 @@ public class CartService {
         List<CartItem> cartItems = cartItemRepository.findAllByOrderByItemId();
 
         AtomicLong total = new AtomicLong();
-        List<CartItemDto> ItemDtoList= cartItems.stream()
+        List<CartItemDto> cartItemDtoList = cartItems.stream()
                 .map(mapper::toDto)
                 .peek(itemDto -> total.addAndGet(itemDto.price() * itemDto.count()))
                 .toList();
-        return new CartDto(ItemDtoList, total.get());
+        return new CartDto(cartItemDtoList, total.get());
     }
 
     public CartDto performActionAndGetCart(Long id, ItemAction action) {
@@ -66,13 +66,14 @@ public class CartService {
         Item item = repository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException(itemId));
 
-        int count = switch (action) {
-            case MINUS -> Math.max(item.getCount() - 1, 0);
-            case PLUS ->  item.getCount() + 1;
+        CartItem cartItem = item.getCartItem();
+        int count = (cartItem == null) ? 0 : cartItem.getCount();
+        count = switch (action) {
+            case MINUS -> Math.max(count - 1, 0);
+            case PLUS ->  count + 1;
             case DELETE -> 0;
         };
 
-        CartItem cartItem = item.getCartItem();
         if (count > 0) {
 
             if (cartItem == null) {
@@ -96,7 +97,7 @@ public class CartService {
 
     @Transactional
     public Long buy() {
-        List<CartItem> cartItems = cartItemRepository.findAll();
+        List<CartItem> cartItems = cartItemRepository.findAllByOrderByItemId();
 
         if (cartItems == null || cartItems.isEmpty()) {
             throw new EmptyCartException();

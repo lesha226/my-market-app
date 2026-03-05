@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.market.dto.OrderDto;
 import ru.yandex.practicum.market.dto.OrderItemDto;
 import ru.yandex.practicum.market.entities.Order;
-import ru.yandex.practicum.market.exceptions.OrderNotFountException;
+import ru.yandex.practicum.market.exceptions.OrderNotFoundException;
 import ru.yandex.practicum.market.repositories.OrderRepository;
 import ru.yandex.practicum.market.services.mappers.OrderMapper;
 
@@ -29,7 +29,7 @@ public class OrderService {
 
     public OrderDto getOrder(Long id, boolean newOrder) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFountException(id));
+                .orElseThrow(() -> new OrderNotFoundException(id));
 
         return mapOrderToDto(order);
     }

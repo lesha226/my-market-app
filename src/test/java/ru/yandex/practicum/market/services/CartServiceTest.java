@@ -114,7 +114,7 @@ class CartServiceTest {
 
         Long id = service.buy();
         entityManager.flush();
-        Integer cartSize = template.queryForObject("select count(*) from items where count > 0", Integer.class);
+        Integer cartSize = template.queryForObject("select count(*) from cart_items where count > 0", Integer.class);
 
         OrderDto result = orderService.getOrder(id, false);
 

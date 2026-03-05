@@ -2,9 +2,9 @@ package ru.yandex.practicum.market.exceptions;
 
 import jakarta.persistence.EntityNotFoundException;
 
-public class OrderNotFountException extends EntityNotFoundException {
+public class OrderNotFoundException extends EntityNotFoundException {
 
-    public OrderNotFountException(Long id) {
+    public OrderNotFoundException(Long id) {
         super("Заказ не найден!");
     }
 }
