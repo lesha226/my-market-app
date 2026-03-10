@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="create-cart_items" author="lesha226@yandex.ru">
+        <preConditions>
+            <not>
+                <tableExists tableName="cart_items"/>
+            </not>
+        </preConditions>
+        <!--
+            create table if not exists cart_items(
+                item_id     bigint          not null,
+                count       integer         not null,
+                constraint pk_cart_items primary key (item_id)
+            );
+        -->
+        <createTable tableName="cart_items">
+            <column name="item_id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_cart_items" nullable="false"/>
+            </column>
+            <column name="count" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="cart_items"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
