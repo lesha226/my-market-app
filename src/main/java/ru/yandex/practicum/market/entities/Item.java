@@ -1,28 +1,32 @@
 package ru.yandex.practicum.market.entities;
 
-import jakarta.persistence.*;
 import lombok.*;
-import org.jspecify.annotations.Nullable;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table(name="ITEMS")
+@Table("items")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Item {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column("id")
     private Long id;
 
-    @Column(unique = true)
+    @Column("title")
     private String title;
 
+    @Column("description")
     private String description;
 
-    @Column(name = "img_path")
+    @Column("img_path")
     private String imgPath;
 
+    @Column("price")
     private long price;
 
-    @OneToOne(mappedBy = "item", fetch = FetchType.LAZY, optional = true)
+    @Transient
     private CartItem cartItem;
 
 }

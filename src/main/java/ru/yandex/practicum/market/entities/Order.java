@@ -1,27 +1,20 @@
 package ru.yandex.practicum.market.entities;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name="orders")
+@Table("orders")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column("id")
     private Long id;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>();
-
-    public long getTotalSum() {
-        return items.stream()
-                .mapToLong(orderItem -> orderItem.getItem().getPrice() * orderItem.getCount())
-                .sum();
-    }
 
 }
