@@ -6,12 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.reactive.result.view.Rendering;
+import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 import ru.yandex.practicum.market.dto.CartDto;
+import ru.yandex.practicum.market.dto.ItemActionRequest;
 import ru.yandex.practicum.market.dto.subtypes.ItemAction;
 import ru.yandex.practicum.market.services.CartService;
 
 @Controller
-@RequestMapping("/cart")
 public class CartController {
 
     private final CartService service;
@@ -20,26 +23,41 @@ public class CartController {
         this.service = service;
     }
 
-    @GetMapping("/items")
-    public String getItems(Model model) {
-        CartDto cartDto = service.getCart();
-
-        model.addAttribute("items", cartDto.items());
-        model.addAttribute("total", cartDto.total());
-
-        return "cart";
+    @GetMapping("/cart/items")
+    public Mono<Rendering> getItems() {
+        System.out.println("getItems");
+        return service.getCart()
+                .map(cartDto ->
+                        Rendering.view("cart")
+                                .modelAttribute("items", cartDto.items())
+                                .modelAttribute("total", cartDto.total())
+                                .build()
+                );
     }
 
-    @PostMapping("/items")
-    public String addItemToCart(Model model,
-                                @RequestParam(name = "id") Long id,
-                                @RequestParam(name = "action") ItemAction action) {
+    @PostMapping("/cart/items")
+    public Mono<Rendering> addItemToCart(Mono<ItemActionRequest> itemActionRequestMono) {
 
-        CartDto cartDto = service.performActionAndGetCart(id, action);
+        return itemActionRequestMono
+                .flatMap(itemActionRequest ->
+                        service.performAction(itemActionRequest.id(), itemActionRequest.action()))
+                .thenReturn("/cart/items")
+                .map(url -> Rendering.redirectTo(url).build());
+    }
 
-        model.addAttribute("items", cartDto.items());
-        model.addAttribute("total", cartDto.total());
+    @PostMapping("/buy")
+    public Mono<Rendering> buy() {
 
-        return "cart";
+        System.out.println("buy");
+
+        return service.buy()
+                .log()
+                .map(orderId ->
+                        UriComponentsBuilder.fromPath("/orders/" + orderId)
+                                .queryParam("newOrder", true)
+                                .build()
+                                .toUriString()
+                )
+                .map(url -> Rendering.redirectTo(url).build());
     }
 }

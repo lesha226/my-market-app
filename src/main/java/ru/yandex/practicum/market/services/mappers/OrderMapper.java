@@ -13,10 +13,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
-    @Mapping(source = "item.id", target = "id")
+    /*@Mapping(source = "item.id", target = "id")
     @Mapping(source = "item.title", target = "title")
     @Mapping(source = "item.price", target = "price")
     OrderItemDto toDto(OrderItem orderItem);
 
-    List<OrderItemDto> toDto(List<OrderItem> items);
+    List<OrderItemDto> toDto(List<OrderItem> items);*/
 }
